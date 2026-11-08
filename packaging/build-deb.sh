@@ -12,7 +12,7 @@
 
 set -e
 
-VERSION=${VERSION:-0.2.0}
+VERSION=${VERSION:-0.2.1}
 REVISION=${REVISION:-1}
 MAINTAINER=${MAINTAINER:-"Shirozo <109609284+Shirozo@users.noreply.github.com>"}
 PKG=printer-driver-xid8300
@@ -66,6 +66,13 @@ EOF
 gzip -9n -c > "$DOC/changelog.gz" <<EOF
 $PKG ($VERSION-$REVISION) unstable; urgency=low
 
+  * Upgrading no longer resets each printer's default options (paper size,
+    two-sided printing, colour table, printer settings) to the PPD defaults.
+
+ -- $MAINTAINER  $(date -R)
+
+$PKG (0.2.0-1) unstable; urgency=low
+
   * First public release.
 
  -- $MAINTAINER  $(date -R)
@@ -107,12 +114,22 @@ cat > "$STAGE/DEBIAN/postinst" <<'EOF'
 #!/bin/sh
 set -e
 if [ "$1" = configure ]; then
-    # Give existing XID printers the new PPD (CUPS keeps their default options).
+    # Give existing XID printers the new PPD.  lpadmin -P replaces the
+    # printer's defaults with the PPD's, so the old ones are re-applied.
     if command -v lpstat >/dev/null 2>&1 && lpstat -r >/dev/null 2>&1; then
         lpstat -v 2>/dev/null | sed -n 's/^device for \([^:]*\): xid8300:.*/\1/p' | while read -r q; do
+            old=/etc/cups/ppd/$q.ppd
             model=xid8300
-            grep -q '^\*ModelName: "Matica XID8100"' "/etc/cups/ppd/$q.ppd" 2>/dev/null && model=xid8100
-            if lpadmin -p "$q" -P "/usr/share/cups/model/$model.ppd" -o print-scaling-default=fill >/dev/null 2>&1; then
+            grep -q '^\*ModelName: "Matica XID8100"' "$old" 2>/dev/null && model=xid8100
+            new=/usr/share/cups/model/$model.ppd
+            # Keep each old default whose option and choice the new PPD still has.
+            opts=
+            for kv in $(sed -n 's/^\*Default\([A-Za-z0-9]*\): *\([^ ]*\) *$/\1=\2/p' "$old" 2>/dev/null); do
+                key=${kv%%=*} val=${kv#*=}
+                grep -q "^\*$key $val[/:]" "$new" && opts="$opts -o $kv"
+            done
+            # shellcheck disable=SC2086
+            if lpadmin -p "$q" -P "$new" -o print-scaling-default=fill $opts >/dev/null 2>&1; then
                 echo "Updated printer $q to the new driver options."
             fi
         done
