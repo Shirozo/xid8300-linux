@@ -1,0 +1,694 @@
+*PPD-Adobe: "4.3"
+*%
+*% Matica XID8300 retransfer card printer - CUPS raster driver.
+*% Filter: rastertoxid8300, backend: xid8300://host[:port]
+*%
+*FormatVersion: "4.3"
+*FileVersion: "0.1"
+*LanguageVersion: English
+*LanguageEncoding: ISOLatin1
+*PCFileName: "XID8300.PPD"
+*Manufacturer: "Matica"
+*Product: "(XID8300)"
+*ModelName: "Matica XID8300"
+*ShortNickName: "Matica XID8300"
+*NickName: "Matica XID8300 card printer, rastertoxid8300"
+*PSVersion: "(3010.000) 0"
+*LanguageLevel: "3"
+*ColorDevice: True
+*DefaultColorSpace: RGB
+*FileSystem: False
+*Throughput: "1"
+*LandscapeOrientation: Plus90
+*TTRasterizer: Type42
+*cupsVersion: 2.2
+*cupsModelNumber: 8300
+*cupsManualCopies: True
+*cupsBackSide: Normal
+*cupsFilter2: "application/vnd.cups-raster application/vnd.matica-xid8300 100 rastertoxid8300"
+
+*% Colour-correction cube from the Windows driver; not included, import it with xid8300-import.
+*xidLUTFile: "/var/lib/printer-driver-xid8300/LUT24.LUT"
+
+
+*OpenGroup: General/General
+
+*% 1036 x 664 dots at 300 dpi (docs/PROTOCOL.md 1.5).
+*OpenUI *PageSize/Card Orientation: PickOne
+*OrderDependency: 10 AnySetup *PageSize
+*DefaultPageSize: CR80
+*PageSize CR80/Landscape (CR80): "<</PageSize[248.64 159.36]/ImagingBBox null>>setpagedevice"
+*PageSize CR80Portrait/Portrait (CR80), e.g. ID cards: "<</PageSize[159.36 248.64]/ImagingBBox null>>setpagedevice"
+*CloseUI: *PageSize
+
+*OpenUI *PageRegion: PickOne
+*OrderDependency: 10 AnySetup *PageRegion
+*DefaultPageRegion: CR80
+*PageRegion CR80/Landscape (CR80): "<</PageSize[248.64 159.36]/ImagingBBox null>>setpagedevice"
+*PageRegion CR80Portrait/Portrait (CR80), e.g. ID cards: "<</PageSize[159.36 248.64]/ImagingBBox null>>setpagedevice"
+*CloseUI: *PageRegion
+
+*OpenUI *Resolution/Resolution: PickOne
+*OrderDependency: 20 AnySetup *Resolution
+*DefaultResolution: 300dpi
+*Resolution 300dpi/300 DPI: "<</HWResolution[300 300]/cupsBitsPerColor 8/cupsColorOrder 0/cupsColorSpace 1>>setpagedevice"
+*CloseUI: *Resolution
+
+*OpenUI *ColorModel/Colour Mode: PickOne
+*OrderDependency: 20 AnySetup *ColorModel
+*DefaultColorModel: RGB
+*ColorModel RGB/Colour: "<</cupsColorSpace 1/cupsColorOrder 0/cupsBitsPerColor 8>>setpagedevice"
+*CloseUI: *ColorModel
+
+*OpenUI *Duplex/Print on Both Sides: PickOne
+*OrderDependency: 20 AnySetup *Duplex
+*DefaultDuplex: None
+*Duplex None/Off (front only): "<</Duplex false/Tumble false>>setpagedevice"
+*Duplex DuplexNoTumble/On (page 1 front, page 2 back): "<</Duplex true/Tumble false>>setpagedevice"
+*Duplex DuplexTumble/On, back turned 180: "<</Duplex true/Tumble true>>setpagedevice"
+*CloseUI: *Duplex
+
+*% Image size: like the Windows driver, the page is scaled to the full print area
+*% (1036 x 664 dots, a little larger than the card) so the card is printed edge to edge.
+*OpenUI *CardFit/Image Size: PickOne
+*OrderDependency: 30 AnySetup *CardFit
+*DefaultCardFit: Fill
+*CardFit Fill/Fill the card edge to edge: ""
+*CardFit Actual/Actual size, centred: ""
+*CloseUI: *CardFit
+
+*% Image position correction for the printer, in mm (applies to both sides).
+*% Directions are as seen on a landscape card. For a portrait design, "up" moves the
+*% image towards the right edge of the design and "right" towards its bottom edge.
+*OpenUI *ImageShiftX/Move Image Left/Right: PickOne
+*OrderDependency: 30 AnySetup *ImageShiftX
+*DefaultImageShiftX: 0
+*ImageShiftX -3.00/3.00 mm left: ""
+*ImageShiftX -2.75/2.75 mm left: ""
+*ImageShiftX -2.50/2.50 mm left: ""
+*ImageShiftX -2.25/2.25 mm left: ""
+*ImageShiftX -2.00/2.00 mm left: ""
+*ImageShiftX -1.75/1.75 mm left: ""
+*ImageShiftX -1.50/1.50 mm left: ""
+*ImageShiftX -1.25/1.25 mm left: ""
+*ImageShiftX -1.00/1.00 mm left: ""
+*ImageShiftX -0.75/0.75 mm left: ""
+*ImageShiftX -0.50/0.50 mm left: ""
+*ImageShiftX -0.25/0.25 mm left: ""
+*ImageShiftX 0/No change: ""
+*ImageShiftX 0.25/0.25 mm right: ""
+*ImageShiftX 0.50/0.50 mm right: ""
+*ImageShiftX 0.75/0.75 mm right: ""
+*ImageShiftX 1.00/1.00 mm right: ""
+*ImageShiftX 1.25/1.25 mm right: ""
+*ImageShiftX 1.50/1.50 mm right: ""
+*ImageShiftX 1.75/1.75 mm right: ""
+*ImageShiftX 2.00/2.00 mm right: ""
+*ImageShiftX 2.25/2.25 mm right: ""
+*ImageShiftX 2.50/2.50 mm right: ""
+*ImageShiftX 2.75/2.75 mm right: ""
+*ImageShiftX 3.00/3.00 mm right: ""
+*CloseUI: *ImageShiftX
+
+*OpenUI *ImageShiftY/Move Image Up/Down: PickOne
+*OrderDependency: 30 AnySetup *ImageShiftY
+*DefaultImageShiftY: 0
+*ImageShiftY -3.00/3.00 mm up: ""
+*ImageShiftY -2.75/2.75 mm up: ""
+*ImageShiftY -2.50/2.50 mm up: ""
+*ImageShiftY -2.25/2.25 mm up: ""
+*ImageShiftY -2.00/2.00 mm up: ""
+*ImageShiftY -1.75/1.75 mm up: ""
+*ImageShiftY -1.50/1.50 mm up: ""
+*ImageShiftY -1.25/1.25 mm up: ""
+*ImageShiftY -1.00/1.00 mm up: ""
+*ImageShiftY -0.75/0.75 mm up: ""
+*ImageShiftY -0.50/0.50 mm up: ""
+*ImageShiftY -0.25/0.25 mm up: ""
+*ImageShiftY 0/No change: ""
+*ImageShiftY 0.25/0.25 mm down: ""
+*ImageShiftY 0.50/0.50 mm down: ""
+*ImageShiftY 0.75/0.75 mm down: ""
+*ImageShiftY 1.00/1.00 mm down: ""
+*ImageShiftY 1.25/1.25 mm down: ""
+*ImageShiftY 1.50/1.50 mm down: ""
+*ImageShiftY 1.75/1.75 mm down: ""
+*ImageShiftY 2.00/2.00 mm down: ""
+*ImageShiftY 2.25/2.25 mm down: ""
+*ImageShiftY 2.50/2.50 mm down: ""
+*ImageShiftY 2.75/2.75 mm down: ""
+*ImageShiftY 3.00/3.00 mm down: ""
+*CloseUI: *ImageShiftY
+
+*% Windows Setup page. Needs the card turnover unit.
+*OpenUI *TurnOverAfterLoad/Turn Over the Card After Loading: Boolean
+*OrderDependency: 30 AnySetup *TurnOverAfterLoad
+*DefaultTurnOverAfterLoad: False
+*TurnOverAfterLoad False/No: ""
+*TurnOverAfterLoad True/Yes: ""
+*CloseUI: *TurnOverAfterLoad
+
+*% Two-sided cards only.
+*OpenUI *BackSideFirst/Print the Back Side First: Boolean
+*OrderDependency: 30 AnySetup *BackSideFirst
+*DefaultBackSideFirst: False
+*BackSideFirst False/No: ""
+*BackSideFirst True/Yes: ""
+*CloseUI: *BackSideFirst
+
+*CloseGroup: General
+
+*OpenGroup: Print/Print
+
+*% Panels per side. With a UV choice the next page of the document is the UV layer.
+*OpenUI *FrontPanels/Front Side Print Mode: PickOne
+*OrderDependency: 30 AnySetup *FrontPanels
+*DefaultFrontPanels: YMCK
+*FrontPanels YMC/YMC: ""
+*FrontPanels K/K (resin black only): ""
+*FrontPanels YMCK/YMCK: ""
+*FrontPanels YMCUV/YMC + UV (next page): ""
+*FrontPanels KUV/K + UV (next page): ""
+*FrontPanels YMCKUV/YMCK + UV (next page): ""
+*CloseUI: *FrontPanels
+
+*OpenUI *BackPanels/Back Side Print Mode: PickOne
+*OrderDependency: 30 AnySetup *BackPanels
+*DefaultBackPanels: YMCK
+*BackPanels YMC/YMC: ""
+*BackPanels K/K (resin black only): ""
+*BackPanels YMCK/YMCK: ""
+*BackPanels YMCUV/YMC + UV (next page): ""
+*BackPanels KUV/K + UV (next page): ""
+*BackPanels YMCKUV/YMCK + UV (next page): ""
+*CloseUI: *BackPanels
+
+*% Windows "Using of Resin K ink". Text cannot be told apart in a raster, so "Only text" is
+*% approximated by extracting pure black; "With YMC ink" keeps the colour under it.
+*OpenUI *BlackMode/Using of Resin K Ink: PickOne
+*OrderDependency: 30 AnySetup *BlackMode
+*DefaultBlackMode: KPlusColor
+*BlackMode KOnly/Extraction, K only (no YMC under black): ""
+*BlackMode KPlusColor/Extraction, with YMC ink: ""
+*BlackMode Composite/No extraction (black from YMC): ""
+*CloseUI: *BlackMode
+
+*OpenUI *BlackThreshold/Treat as Black: PickOne
+*OrderDependency: 30 AnySetup *BlackThreshold
+*DefaultBlackThreshold: 0
+*BlackThreshold 0/Exactly 0,0,0: ""
+*BlackThreshold 16/Channels 16 or less: ""
+*BlackThreshold 32/Channels 32 or less: ""
+*CloseUI: *BlackThreshold
+
+*OpenUI *MonoMethod/K-Only Side Rendering: PickOne
+*OrderDependency: 30 AnySetup *MonoMethod
+*DefaultMonoMethod: Threshold
+*MonoMethod Threshold/Threshold at 50%: ""
+*MonoMethod Dither/Error diffusion: ""
+*CloseUI: *MonoMethod
+
+*OpenUI *FrontRotate180/Rotate Front 180: Boolean
+*OrderDependency: 30 AnySetup *FrontRotate180
+*DefaultFrontRotate180: False
+*FrontRotate180 False/No: ""
+*FrontRotate180 True/Yes: ""
+*CloseUI: *FrontRotate180
+
+*OpenUI *BackRotate180/Rotate Back 180: Boolean
+*OrderDependency: 30 AnySetup *BackRotate180
+*DefaultBackRotate180: False
+*BackRotate180 False/No: ""
+*BackRotate180 True/Yes: ""
+*CloseUI: *BackRotate180
+
+*% UV ink page of the Windows driver; sent with the UV plane.
+*OpenUI *UVMarkPosition/UV Mark Position: PickOne
+*OrderDependency: 30 AnySetup *UVMarkPosition
+*DefaultUVMarkPosition: UpperRight
+*UVMarkPosition UpperRight/Upper right: ""
+*UVMarkPosition LowerLeft/Lower left: ""
+*CloseUI: *UVMarkPosition
+
+*OpenUI *UVFilmPanels/UV Retransfer Film Panels: PickOne
+*OrderDependency: 30 AnySetup *UVFilmPanels
+*DefaultUVFilmPanels: Two
+*UVFilmPanels Two/2 panels: ""
+*UVFilmPanels One/1 panel: ""
+*UVFilmPanels Auto/Auto: ""
+*CloseUI: *UVFilmPanels
+
+*CloseGroup: Print
+
+*OpenGroup: Color/Color Adjustment
+
+*% Windows "Enable the look-up table" (off by default, as in Windows).
+*OpenUI *ColorCorrection/Enable the Look-up Table: PickOne
+*OrderDependency: 30 AnySetup *ColorCorrection
+*DefaultColorCorrection: None
+*ColorCorrection None/Off: ""
+*ColorCorrection LUT/On (Matica LUT24): ""
+*CloseUI: *ColorCorrection
+
+*% Windows "Color adjustment" (applied to RGB before printing).
+*OpenUI *Brightness/Brightness: PickOne
+*OrderDependency: 30 AnySetup *Brightness
+*DefaultBrightness: 0
+*Brightness 0/0 (no change): ""
+*Brightness -100/-100: ""
+*Brightness -90/-90: ""
+*Brightness -80/-80: ""
+*Brightness -70/-70: ""
+*Brightness -60/-60: ""
+*Brightness -50/-50: ""
+*Brightness -40/-40: ""
+*Brightness -30/-30: ""
+*Brightness -20/-20: ""
+*Brightness -10/-10: ""
+*Brightness 10/+10: ""
+*Brightness 20/+20: ""
+*Brightness 30/+30: ""
+*Brightness 40/+40: ""
+*Brightness 50/+50: ""
+*Brightness 60/+60: ""
+*Brightness 70/+70: ""
+*Brightness 80/+80: ""
+*Brightness 90/+90: ""
+*Brightness 100/+100: ""
+*CloseUI: *Brightness
+
+*OpenUI *Contrast/Contrast: PickOne
+*OrderDependency: 30 AnySetup *Contrast
+*DefaultContrast: 0
+*Contrast 0/0 (no change): ""
+*Contrast -100/-100: ""
+*Contrast -90/-90: ""
+*Contrast -80/-80: ""
+*Contrast -70/-70: ""
+*Contrast -60/-60: ""
+*Contrast -50/-50: ""
+*Contrast -40/-40: ""
+*Contrast -30/-30: ""
+*Contrast -20/-20: ""
+*Contrast -10/-10: ""
+*Contrast 10/+10: ""
+*Contrast 20/+20: ""
+*Contrast 30/+30: ""
+*Contrast 40/+40: ""
+*Contrast 50/+50: ""
+*Contrast 60/+60: ""
+*Contrast 70/+70: ""
+*Contrast 80/+80: ""
+*Contrast 90/+90: ""
+*Contrast 100/+100: ""
+*CloseUI: *Contrast
+
+*OpenUI *HueRed/Hue, Red: PickOne
+*OrderDependency: 30 AnySetup *HueRed
+*DefaultHueRed: 0
+*HueRed 0/0 (no change): ""
+*HueRed -100/-100: ""
+*HueRed -90/-90: ""
+*HueRed -80/-80: ""
+*HueRed -70/-70: ""
+*HueRed -60/-60: ""
+*HueRed -50/-50: ""
+*HueRed -40/-40: ""
+*HueRed -30/-30: ""
+*HueRed -20/-20: ""
+*HueRed -10/-10: ""
+*HueRed 10/+10: ""
+*HueRed 20/+20: ""
+*HueRed 30/+30: ""
+*HueRed 40/+40: ""
+*HueRed 50/+50: ""
+*HueRed 60/+60: ""
+*HueRed 70/+70: ""
+*HueRed 80/+80: ""
+*HueRed 90/+90: ""
+*HueRed 100/+100: ""
+*CloseUI: *HueRed
+
+*OpenUI *HueGreen/Hue, Green: PickOne
+*OrderDependency: 30 AnySetup *HueGreen
+*DefaultHueGreen: 0
+*HueGreen 0/0 (no change): ""
+*HueGreen -100/-100: ""
+*HueGreen -90/-90: ""
+*HueGreen -80/-80: ""
+*HueGreen -70/-70: ""
+*HueGreen -60/-60: ""
+*HueGreen -50/-50: ""
+*HueGreen -40/-40: ""
+*HueGreen -30/-30: ""
+*HueGreen -20/-20: ""
+*HueGreen -10/-10: ""
+*HueGreen 10/+10: ""
+*HueGreen 20/+20: ""
+*HueGreen 30/+30: ""
+*HueGreen 40/+40: ""
+*HueGreen 50/+50: ""
+*HueGreen 60/+60: ""
+*HueGreen 70/+70: ""
+*HueGreen 80/+80: ""
+*HueGreen 90/+90: ""
+*HueGreen 100/+100: ""
+*CloseUI: *HueGreen
+
+*OpenUI *HueBlue/Hue, Blue: PickOne
+*OrderDependency: 30 AnySetup *HueBlue
+*DefaultHueBlue: 0
+*HueBlue 0/0 (no change): ""
+*HueBlue -100/-100: ""
+*HueBlue -90/-90: ""
+*HueBlue -80/-80: ""
+*HueBlue -70/-70: ""
+*HueBlue -60/-60: ""
+*HueBlue -50/-50: ""
+*HueBlue -40/-40: ""
+*HueBlue -30/-30: ""
+*HueBlue -20/-20: ""
+*HueBlue -10/-10: ""
+*HueBlue 10/+10: ""
+*HueBlue 20/+20: ""
+*HueBlue 30/+30: ""
+*HueBlue 40/+40: ""
+*HueBlue 50/+50: ""
+*HueBlue 60/+60: ""
+*HueBlue 70/+70: ""
+*HueBlue 80/+80: ""
+*HueBlue 90/+90: ""
+*HueBlue 100/+100: ""
+*CloseUI: *HueBlue
+
+*OpenUI *GammaRed/Gamma, Red: PickOne
+*OrderDependency: 30 AnySetup *GammaRed
+*DefaultGammaRed: 1.0
+*GammaRed 1.0/1.0 (no change): ""
+*GammaRed 1.2/1.2: ""
+*GammaRed 1.4/1.4: ""
+*GammaRed 1.6/1.6: ""
+*GammaRed 1.8/1.8: ""
+*GammaRed 2.0/2.0: ""
+*GammaRed 2.2/2.2: ""
+*GammaRed 2.5/2.5: ""
+*GammaRed 3.0/3.0: ""
+*GammaRed 4.0/4.0: ""
+*GammaRed 5.0/5.0: ""
+*GammaRed 7.0/7.0: ""
+*GammaRed 10.0/10.0: ""
+*CloseUI: *GammaRed
+
+*OpenUI *GammaGreen/Gamma, Green: PickOne
+*OrderDependency: 30 AnySetup *GammaGreen
+*DefaultGammaGreen: 1.0
+*GammaGreen 1.0/1.0 (no change): ""
+*GammaGreen 1.2/1.2: ""
+*GammaGreen 1.4/1.4: ""
+*GammaGreen 1.6/1.6: ""
+*GammaGreen 1.8/1.8: ""
+*GammaGreen 2.0/2.0: ""
+*GammaGreen 2.2/2.2: ""
+*GammaGreen 2.5/2.5: ""
+*GammaGreen 3.0/3.0: ""
+*GammaGreen 4.0/4.0: ""
+*GammaGreen 5.0/5.0: ""
+*GammaGreen 7.0/7.0: ""
+*GammaGreen 10.0/10.0: ""
+*CloseUI: *GammaGreen
+
+*OpenUI *GammaBlue/Gamma, Blue: PickOne
+*OrderDependency: 30 AnySetup *GammaBlue
+*DefaultGammaBlue: 1.0
+*GammaBlue 1.0/1.0 (no change): ""
+*GammaBlue 1.2/1.2: ""
+*GammaBlue 1.4/1.4: ""
+*GammaBlue 1.6/1.6: ""
+*GammaBlue 1.8/1.8: ""
+*GammaBlue 2.0/2.0: ""
+*GammaBlue 2.2/2.2: ""
+*GammaBlue 2.5/2.5: ""
+*GammaBlue 3.0/3.0: ""
+*GammaBlue 4.0/4.0: ""
+*GammaBlue 5.0/5.0: ""
+*GammaBlue 7.0/7.0: ""
+*GammaBlue 10.0/10.0: ""
+*CloseUI: *GammaBlue
+
+*CloseGroup: Color
+
+*OpenGroup: PrinterSettings/Printer Settings
+
+*% Windows "Printer settings": -3 light ... +3 dark; Default keeps the printer's own value.
+*OpenUI *YMCLevel/YMC Ink Print Level: PickOne
+*OrderDependency: 30 AnySetup *YMCLevel
+*DefaultYMCLevel: Default
+*YMCLevel Default/Printer setting: ""
+*YMCLevel -3/-3: ""
+*YMCLevel -2/-2: ""
+*YMCLevel -1/-1: ""
+*YMCLevel 0/0: ""
+*YMCLevel 1/+1: ""
+*YMCLevel 2/+2: ""
+*YMCLevel 3/+3: ""
+*CloseUI: *YMCLevel
+
+*OpenUI *KLevel/Resin K Ink Print Level: PickOne
+*OrderDependency: 30 AnySetup *KLevel
+*DefaultKLevel: Default
+*KLevel Default/Printer setting: ""
+*KLevel -3/-3: ""
+*KLevel -2/-2: ""
+*KLevel -1/-1: ""
+*KLevel 0/0: ""
+*KLevel 1/+1: ""
+*KLevel 2/+2: ""
+*KLevel 3/+3: ""
+*CloseUI: *KLevel
+
+*OpenUI *UVLevel/UV Ink Print Level: PickOne
+*OrderDependency: 30 AnySetup *UVLevel
+*DefaultUVLevel: Default
+*UVLevel Default/Printer setting: ""
+*UVLevel -3/-3: ""
+*UVLevel -2/-2: ""
+*UVLevel -1/-1: ""
+*UVLevel 0/0: ""
+*UVLevel 1/+1: ""
+*UVLevel 2/+2: ""
+*UVLevel 3/+3: ""
+*CloseUI: *UVLevel
+
+*OpenUI *PeelOffLevel/Peel-off Ink Print Level: PickOne
+*OrderDependency: 30 AnySetup *PeelOffLevel
+*DefaultPeelOffLevel: Default
+*PeelOffLevel Default/Printer setting: ""
+*PeelOffLevel -3/-3: ""
+*PeelOffLevel -2/-2: ""
+*PeelOffLevel -1/-1: ""
+*PeelOffLevel 0/0: ""
+*PeelOffLevel 1/+1: ""
+*PeelOffLevel 2/+2: ""
+*PeelOffLevel 3/+3: ""
+*CloseUI: *PeelOffLevel
+
+*OpenUI *KPrintMode/Resin K Print Mode: PickOne
+*OrderDependency: 30 AnySetup *KPrintMode
+*DefaultKPrintMode: Default
+*KPrintMode Default/Printer setting: ""
+*KPrintMode Standard/Standard: ""
+*KPrintMode Fine/Fine: ""
+*CloseUI: *KPrintMode
+
+*OpenUI *MagPeelMode/MG Peel Mode: PickOne
+*OrderDependency: 30 AnySetup *MagPeelMode
+*DefaultMagPeelMode: Default
+*MagPeelMode Default/Printer setting: ""
+*MagPeelMode Standard/Standard: ""
+*MagPeelMode MGStripe/MG Stripe: ""
+*CloseUI: *MagPeelMode
+
+*OpenUI *StandbyMode/Standby Mode: PickOne
+*OrderDependency: 30 AnySetup *StandbyMode
+*DefaultStandbyMode: Default
+*StandbyMode Default/Printer setting: ""
+*StandbyMode FrontWait/Front wait: ""
+*StandbyMode BackWait/Back wait: ""
+*CloseUI: *StandbyMode
+
+*OpenUI *BackCooling/Back Side Cooling: PickOne
+*OrderDependency: 30 AnySetup *BackCooling
+*DefaultBackCooling: Default
+*BackCooling Default/Printer setting: ""
+*BackCooling Enable/Enable: ""
+*BackCooling Disable/Disable: ""
+*CloseUI: *BackCooling
+
+*% Retransfer: higher temperature and lower speed transfer more strongly but heat the card more.
+*OpenUI *RetransferTemp/Retransfer Temperature: PickOne
+*OrderDependency: 30 AnySetup *RetransferTemp
+*DefaultRetransferTemp: Default
+*RetransferTemp Default/Printer setting: ""
+*RetransferTemp -2/-2: ""
+*RetransferTemp -1/-1: ""
+*RetransferTemp 0/0: ""
+*RetransferTemp 1/+1: ""
+*RetransferTemp 2/+2: ""
+*CloseUI: *RetransferTemp
+
+*OpenUI *RetransferSpeedFront/Retransfer Speed, Front: PickOne
+*OrderDependency: 30 AnySetup *RetransferSpeedFront
+*DefaultRetransferSpeedFront: Default
+*RetransferSpeedFront Default/Printer setting: ""
+*RetransferSpeedFront -3/-3: ""
+*RetransferSpeedFront -2/-2: ""
+*RetransferSpeedFront -1/-1: ""
+*RetransferSpeedFront 0/0: ""
+*RetransferSpeedFront 1/+1: ""
+*RetransferSpeedFront 2/+2: ""
+*CloseUI: *RetransferSpeedFront
+
+*OpenUI *RetransferSpeedBack/Retransfer Speed, Back: PickOne
+*OrderDependency: 30 AnySetup *RetransferSpeedBack
+*DefaultRetransferSpeedBack: Default
+*RetransferSpeedBack Default/Printer setting: ""
+*RetransferSpeedBack -3/-3: ""
+*RetransferSpeedBack -2/-2: ""
+*RetransferSpeedBack -1/-1: ""
+*RetransferSpeedBack 0/0: ""
+*RetransferSpeedBack 1/+1: ""
+*RetransferSpeedBack 2/+2: ""
+*CloseUI: *RetransferSpeedBack
+
+*OpenUI *UVSpeedFront/UV Speed, Front: PickOne
+*OrderDependency: 30 AnySetup *UVSpeedFront
+*DefaultUVSpeedFront: Default
+*UVSpeedFront Default/Printer setting: ""
+*UVSpeedFront 0/0: ""
+*UVSpeedFront 1/1: ""
+*UVSpeedFront 2/2: ""
+*UVSpeedFront 3/3: ""
+*UVSpeedFront 4/4: ""
+*UVSpeedFront 5/5: ""
+*CloseUI: *UVSpeedFront
+
+*OpenUI *UVSpeedBack/UV Speed, Back: PickOne
+*OrderDependency: 30 AnySetup *UVSpeedBack
+*DefaultUVSpeedBack: Default
+*UVSpeedBack Default/Printer setting: ""
+*UVSpeedBack 0/0: ""
+*UVSpeedBack 1/1: ""
+*UVSpeedBack 2/2: ""
+*UVSpeedBack 3/3: ""
+*UVSpeedBack 4/4: ""
+*UVSpeedBack 5/5: ""
+*CloseUI: *UVSpeedBack
+
+*% Bend remedy (needs the bend remedy unit): temperature -5..0, speed -2..+2.
+*OpenUI *BendRemedyTemp/Bend Remedy Temperature: PickOne
+*OrderDependency: 30 AnySetup *BendRemedyTemp
+*DefaultBendRemedyTemp: Default
+*BendRemedyTemp Default/Printer setting: ""
+*BendRemedyTemp Disable/Disable bend remedy: ""
+*BendRemedyTemp -5/-5: ""
+*BendRemedyTemp -4/-4: ""
+*BendRemedyTemp -3/-3: ""
+*BendRemedyTemp -2/-2: ""
+*BendRemedyTemp -1/-1: ""
+*BendRemedyTemp 0/0: ""
+*CloseUI: *BendRemedyTemp
+
+*OpenUI *BendRemedySpeed/Bend Remedy Speed: PickOne
+*OrderDependency: 30 AnySetup *BendRemedySpeed
+*DefaultBendRemedySpeed: 0
+*BendRemedySpeed -2/-2: ""
+*BendRemedySpeed -1/-1: ""
+*BendRemedySpeed 0/0: ""
+*BendRemedySpeed 1/+1: ""
+*BendRemedySpeed 2/+2: ""
+*CloseUI: *BendRemedySpeed
+
+*CloseGroup: PrinterSettings
+
+*OpenGroup: Encode/Encode
+
+*% Magnetic stripe: track data comes from the job options mag-track1/2/3 and mag-jis2.
+*% True sends job-header value 0x11 (card flag toggled after encoding); meaning unconfirmed.
+*OpenUI *MagCardFlip/Flip Card After Magnetic Encoding: Boolean
+*OrderDependency: 30 AnySetup *MagCardFlip
+*DefaultMagCardFlip: False
+*MagCardFlip False/No: ""
+*MagCardFlip True/Yes: ""
+*CloseUI: *MagCardFlip
+
+*% Smart card: data comes from the job options ic-contact / ic-contactless and is handed to
+*% the encoding programs in the backend's xid8300 directory. True sends job-header value
+*% 0x11/0x21 (card flag toggled after IC encoding); meaning unconfirmed.
+*OpenUI *ICCardFlip/Flip Card After Smart-Card Encoding: Boolean
+*OrderDependency: 30 AnySetup *ICCardFlip
+*DefaultICCardFlip: False
+*ICCardFlip False/No: ""
+*ICCardFlip True/Yes: ""
+*CloseUI: *ICCardFlip
+
+*OpenUI *MagWriteRetry/Magnetic Write Retry: PickOne
+*OrderDependency: 30 AnySetup *MagWriteRetry
+*DefaultMagWriteRetry: Default
+*MagWriteRetry Default/Printer setting: ""
+*MagWriteRetry 0/0: ""
+*MagWriteRetry 1/1: ""
+*MagWriteRetry 2/2: ""
+*MagWriteRetry 3/3: ""
+*CloseUI: *MagWriteRetry
+
+*OpenUI *MagCoercivity/Magnetic Coercivity: PickOne
+*OrderDependency: 30 AnySetup *MagCoercivity
+*DefaultMagCoercivity: Default
+*MagCoercivity Default/Printer setting: ""
+*MagCoercivity LoCo/Lo-Co: ""
+*MagCoercivity HiCo/Hi-Co: ""
+*CloseUI: *MagCoercivity
+
+*% Encode the magnetic stripe / chip before the card is printed.
+*OpenUI *EncodeBeforePrint/Print After Encoding: Boolean
+*OrderDependency: 30 AnySetup *EncodeBeforePrint
+*DefaultEncodeBeforePrint: False
+*EncodeBeforePrint False/No: ""
+*EncodeBeforePrint True/Yes: ""
+*CloseUI: *EncodeBeforePrint
+
+*CloseGroup: Encode
+
+*OpenGroup: Laminate/Laminate
+
+*% Only for printers with a laminator.
+*OpenUI *LaminateMode/Laminate Mode: PickOne
+*OrderDependency: 30 AnySetup *LaminateMode
+*DefaultLaminateMode: Default
+*LaminateMode Default/Printer setting: ""
+*LaminateMode Laminate/Laminate: ""
+*LaminateMode PassThrough/Pass through: ""
+*CloseUI: *LaminateMode
+
+*CloseGroup: Laminate
+
+*OpenGroup: InstallableOptions/Installed Options
+
+*OpenUI *MagEncoderType/Magnetic Encoder: PickOne
+*DefaultMagEncoderType: ISO
+*MagEncoderType ISO/ISO: ""
+*MagEncoderType JIS/JIS: ""
+*CloseUI: *MagEncoderType
+
+*CloseGroup: InstallableOptions
+
+*DefaultImageableArea: CR80
+*ImageableArea CR80/Landscape (CR80): "0 0 248.64 159.36"
+*ImageableArea CR80Portrait/Portrait (CR80), e.g. ID cards: "0 0 159.36 248.64"
+*DefaultPaperDimension: CR80
+*PaperDimension CR80/Landscape (CR80): "248.64 159.36"
+*PaperDimension CR80Portrait/Portrait (CR80), e.g. ID cards: "159.36 248.64"
+
+*DefaultFont: Courier
+*Font Courier: Standard "(002.004S)" Standard ROM
+*% End of xid8300.ppd

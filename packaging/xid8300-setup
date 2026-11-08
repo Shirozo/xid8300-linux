@@ -1,0 +1,61 @@
+#!/bin/sh
+# xid8300-setup - create a CUPS queue for a Matica XID8300 or XID8100 on the network.
+#
+#   sudo xid8300-setup [--model XID8100|XID8300] [--id-card] PRINTER_IP [QUEUE_NAME]
+#
+# --id-card makes portrait cards printed on both sides the default, like the
+# Windows settings Orientation: Portrait + Print on both sides.
+#
+# The XID8100 uses the same protocol as the XID8300 (it is printed with the
+# XID8300 Windows driver); only the model name shown by CUPS differs.
+
+set -e
+
+model=XID8300
+idcard=
+while [ $# -gt 0 ]; do
+    case $1 in
+        --model)   model=$(echo "$2" | tr '[:lower:]' '[:upper:]'); shift 2 ;;
+        --id-card) idcard=1; shift ;;
+        *)         break ;;
+    esac
+done
+
+case $model in
+    XID8300|XID8100) ;;
+    *) echo "xid8300-setup: --model must be XID8300 or XID8100" >&2; exit 1 ;;
+esac
+
+ip=$1
+queue=${2:-$model}
+ppd=/usr/share/cups/model/$(echo "$model" | tr '[:upper:]' '[:lower:]').ppd
+
+if [ -z "$ip" ]; then
+    echo "Usage: sudo xid8300-setup [--model XID8100|XID8300] [--id-card] PRINTER_IP [QUEUE_NAME]" >&2
+    exit 1
+fi
+
+if [ "$(id -u)" != 0 ]; then
+    echo "xid8300-setup: run with sudo" >&2
+    exit 1
+fi
+
+# -P (PPD path) works without cups-driverd, which minimal installs lack.
+# print-scaling=fill: CUPS scales documents to the full print area (bleed),
+# like the Windows driver; otherwise a card-size PDF keeps a white border.
+if ! out=$(lpadmin -p "$queue" -E -v "xid8300://$ip" -P "$ppd" \
+                   -D "Matica $model" -L "$ip" -o print-scaling-default=fill 2>&1); then
+    echo "$out" >&2
+    echo "xid8300-setup: lpadmin failed - is cups running? (systemctl status cups)" >&2
+    exit 1
+fi
+printf '%s\n' "$out" | grep -v "Printer drivers are deprecated" | grep . || true
+if [ -n "$idcard" ]; then
+    lpadmin -p "$queue" -o PageSize=CR80Portrait -o Duplex=DuplexNoTumble
+    echo "Defaults: portrait cards, printed on both sides (page 1 front, page 2 back)."
+fi
+cupsenable "$queue"
+cupsaccept "$queue"
+
+echo "Queue $queue (Matica $model) created for xid8300://$ip"
+echo "Test cards: /usr/share/printer-driver-xid8300/testcards  (see TESTING.md there)"

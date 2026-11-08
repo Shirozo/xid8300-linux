@@ -1,0 +1,24 @@
+# Build output
+/rastertoxid8300
+/xid8300
+/ppd/xid8100.ppd
+/tests/mkraster
+/tests/areacheck
+/tests/out/
+/dist/
+*.dSYM/
+*.o
+
+# Never commit files from the manufacturer's Windows driver
+*.LUT
+*.lut
+*.KS
+*.ks
+*.DLL
+*.dll
+*.EXE
+*.exe
+*.INF
+*.inf
+*.cat
+*.HLP

@@ -1,0 +1,55 @@
+#!/bin/sh
+# xid8300-import - copy the colour look-up table from your own copy of the
+# Matica XID8300 Windows driver, for ColorCorrection=LUT.
+#
+#   sudo xid8300-import PATH
+#
+# PATH is the LUT24_*.LUT file itself, or a folder that contains it (for
+# example the unpacked Windows driver download).  The file is not part of this
+# driver; it stays on this computer.  Printing works without it: the Windows
+# driver also leaves the look-up table off unless it is ticked.
+
+set -e
+
+DEST=/var/lib/printer-driver-xid8300/LUT24.LUT
+
+if [ $# -ne 1 ]; then
+    echo "Usage: sudo xid8300-import LUT24_FILE_OR_DRIVER_FOLDER" >&2
+    exit 1
+fi
+
+if [ "$(id -u)" != 0 ]; then
+    echo "xid8300-import: run with sudo" >&2
+    exit 1
+fi
+
+src=$1
+if [ -d "$src" ]; then
+    src=$(find "$src" -type f -iname 'LUT24*.LUT' | head -n 1)
+    if [ -z "$src" ]; then
+        echo "xid8300-import: no LUT24*.LUT file found in $1" >&2
+        exit 1
+    fi
+fi
+
+if [ ! -f "$src" ]; then
+    echo "xid8300-import: $src not found" >&2
+    exit 1
+fi
+
+# A LUT24 file is a 16-byte header starting with "LUT24" and a 256^3 x 3-byte
+# cube (some versions have 256 extra bytes at the end).
+size=$(wc -c < "$src" | tr -d ' ')
+if [ "$size" != 50331664 ] && [ "$size" != 50331920 ]; then
+    echo "xid8300-import: $src is not a LUT24 file (size $size)" >&2
+    exit 1
+fi
+if [ "$(head -c 5 "$src")" != LUT24 ]; then
+    echo "xid8300-import: $src is not a LUT24 file (no LUT24 header)" >&2
+    exit 1
+fi
+
+install -d -m 0755 "$(dirname "$DEST")"
+install -m 0644 "$src" "$DEST"
+echo "Imported $(basename "$src") to $DEST."
+echo "Turn it on with:  sudo lpadmin -p PRINTER -o ColorCorrection=LUT   (or per job: lp -o ColorCorrection=LUT)"
