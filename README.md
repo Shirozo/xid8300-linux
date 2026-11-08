@@ -2,6 +2,8 @@
 
 A CUPS filter, network backend and PPDs for the Matica XID8300 and XID8100 retransfer card printers over
 TCP/IP, written from the printer's protocol and file formats ([`docs/PROTOCOL.md`](docs/PROTOCOL.md)).
+The protocol was reverse engineered with [REA](https://github.com/morluto/rea) and
+[Claude Code](https://claude.com/claude-code); see [How it was made](#how-it-was-made).
 
 > **Not affiliated with or endorsed by Matica Technologies or JVC KENWOOD.** Product names are used only to
 > say which printers this works with. The project contains no files or code from the manufacturer's Windows
@@ -429,6 +431,21 @@ The mock printer can also be run by hand to try a real CUPS queue without hardwa
 python3 tests/mock_xid8300.py --port 50710 --out /tmp/xid --sessions 100
 sudo lpadmin -p XIDTEST -E -v xid8300://127.0.0.1 -m xid8300.ppd
 ```
+
+## How it was made
+
+There is no public documentation of the XID8300 protocol, so it was reverse engineered for interoperability:
+
+- [REA](https://github.com/morluto/rea), a reverse-engineering CLI and MCP server (Ghidra-based), was used
+  to analyse the manufacturer's Windows driver: the print processor that renders pages into planes, the
+  port monitor that talks to the printer over TCP, and the printing-preferences dialogs. The results are
+  written up in [`docs/PROTOCOL.md`](docs/PROTOCOL.md).
+- [Claude Code](https://claude.com/claude-code) drove REA for that analysis and wrote the driver, the
+  packaging and the tests from the protocol description. The print-area routine is checked against output
+  recorded from the Windows driver (`tests/golden.sha256`).
+- Field tests on a real XID8100 then fixed the image size, position, colours and two-sided printing.
+
+The project contains no code or data files from the Windows driver.
 
 ## Licence
 
