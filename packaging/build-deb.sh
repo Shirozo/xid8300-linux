@@ -68,6 +68,9 @@ $PKG ($VERSION-$REVISION) unstable; urgency=low
 
   * Upgrading no longer resets each printer's default options (paper size,
     two-sided printing, colour table, printer settings) to the PPD defaults.
+  * Printing many cards in a row no longer stops with "Card feed: unexpected
+    reply from printer" after each one. The backend now waits for the printer
+    to finish the previous card before reading the card position.
 
  -- $MAINTAINER  $(date -R)
 
