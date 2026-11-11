@@ -650,33 +650,42 @@ cmd_read_position(xid_t *x)
 {
   uint8_t f[20];
   reply_t *r = malloc(sizeof(reply_t));
-  int     rc = -3;
+  int     rc = -3, waited = 0;
 
   build_ctl(f, 0, 0x02, 0, 0);
 
-  for (int n = 0; n < 10; n ++)
+  /* Up to ~10 minutes, like tur_wait.  Between back-to-back jobs the printer
+   * may still be finishing the previous card (ejecting, cooling, then
+   * initializing/preheating), so the first ReadPosition of the next job can
+   * come back busy or not-ready.  Wait on those transient states instead of
+   * failing the job, as the rest of the backend does. */
+  for (int n = 0; n < 10 * 60 * 10; n ++)
   {
     int c = classify(xid_command(x, f, sizeof(f), r), r);
 
-    if (c > 0)
+    if (wait_on_status(x, c, &waited))          /* preheating, initializing, ... */
+      continue;
+
+    if (c > 0)                                  /* 0x2D300/400/500 busy */
     {
       msleep(100);
       continue;
     }
 
-    if (c == 0 && r->code == 3 && r->body_len >= 4 && r->body[0] == 1)
+    if (c == 0)
     {
-      uint8_t flags = r->body[2];
+      wait_done();
+      if (r->code == 3 && r->body_len >= 4 && r->body[0] == 1)
+      {
+        uint8_t flags = r->body[2];
 
-      if (flags & 4)
-        rc = (flags & 1) ? -2 : -1;
+        rc = (flags & 4) ? ((flags & 1) ? -2 : -1) : r->body[3];
+      }
       else
-        rc = r->body[3];
+        fprintf(stderr, "ERROR: ReadPosition: unexpected reply code %u.\n", r->code);
     }
-    else if (c < 0)
-      report_error("ReadPosition", c);
     else
-      fprintf(stderr, "ERROR: ReadPosition: unexpected reply code %u.\n", r->code);
+      report_error("ReadPosition", c);
     break;
   }
 

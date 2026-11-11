@@ -49,12 +49,13 @@ def recv_frame(sock):
 
 
 class Printer:
-    def __init__(self, out, busy, mag_error=False, fail_settings=(0, 0), asleep=False):
+    def __init__(self, out, busy, mag_error=False, fail_settings=(0, 0), asleep=False, busy_start=0):
         self.out = out
         self.busy = busy
         self.mag_error = mag_error
         self.fail_status, self.fail_left = fail_settings   # e.g. 0x2DD00 "panel in use"
         self.asleep = asleep                                # power saving until RezeroUnit
+        self.busy_start = busy_start   # first N ReadPositions answer "initializing"
         self.card_pos = None      # None = no card in the transport
         self.card = 0
         self.passes = 0
@@ -91,6 +92,9 @@ class Printer:
                     return frame(0xF1, 2, BUSY[state], tag)
                 return frame(0xF1, 4, 0, tag)
             if sub == 2:
+                if self.busy_start > 0:                     # still finishing the last card
+                    self.busy_start -= 1
+                    return frame(0xF1, 2, 0x02DB00, tag)    # "the printer is initializing"
                 if self.card_pos is None:
                     body = bytes([1, 0, 0x04, 0])
                 else:
@@ -214,6 +218,8 @@ def main():
     ap.add_argument("--fail-settings", default="0:0",
                     help="STATUS:COUNT - answer the first COUNT SettingValue commands with STATUS")
     ap.add_argument("--asleep", action="store_true", help="start in power saving (needs RezeroUnit)")
+    ap.add_argument("--busy-start", type=int, default=0,
+                    help="first N ReadPositions answer 'initializing' (printer still finishing the last card)")
     args = ap.parse_args()
 
     os.makedirs(args.out, exist_ok=True)
@@ -224,7 +230,7 @@ def main():
     print("LISTEN %d" % args.port, flush=True)
 
     st, cnt = args.fail_settings.split(":")
-    printer = Printer(args.out, args.busy, args.mag_error, (int(st, 0), int(cnt)), args.asleep)
+    printer = Printer(args.out, args.busy, args.mag_error, (int(st, 0), int(cnt)), args.asleep, args.busy_start)
     for _ in range(args.sessions):
         conn, _ = srv.accept()
         with conn:
