@@ -68,6 +68,7 @@ run_case icerror     L   "ic-contact=fail-me"     ""   ""   4 3
 run_case icmissing   L   "ic-contact=x"           ""   ""   4 0 /nonexistent/ic-contact
 
 run_case panelbusy   L   ""                       ""   "--fail-settings 0x2DD00:3"
+run_case jobstartbusy L  ""                       ""   "--busy-start 2"
 run_case sleeping    L   ""                       ""   "--asleep"
 run_case jammed      L   ""                       ""   "--fail-settings 0x39300:1" 4
 run_case duplexopt   LL  "Duplex=DuplexNoTumble"  ""   ""
